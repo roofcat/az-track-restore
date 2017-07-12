@@ -26,4 +26,4 @@ def to_unix_timestamp(x):
 def get_date_to_string(x):
     fecha = timestamp_to_date(x)
     date_str = datetime.strftime(fecha, '%Y-%m-%d')
-    return unicode(date_str)
+    return '"' + str(date_str) + '"'

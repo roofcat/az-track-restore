@@ -1,14 +1,18 @@
-# encoding:utf-8
+# encoding: ISO-8859-1
 #!/usr/bin/env python
 
 
 import csv
-import json
-import os
+import codecs
 from optparse import OptionParser
+import sys
 
 
 from csv_loads import generar_csv
+
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 def main():
@@ -27,7 +31,7 @@ def main():
     if csv_file:
         try:
             print csv_file
-            archivo = open(csv_file, 'rbU')
+            archivo = codecs.open(csv_file, "rbU", encoding='ISO-8859-1')
             reader = csv.reader(archivo, delimiter=';')
 
             generar_csv(reader)

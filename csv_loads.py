@@ -1,4 +1,4 @@
-# encoding:utf-8
+# encoding: ISO-8859-1
 
 
 import json
@@ -6,17 +6,12 @@ import date_utils
 
 
 CSV_SUCCESS = "success.csv"
-CSV_ERRORS = "errors.csv"
 
-CSV_HEADER_ERROR = [
-    'event', 'correo', 'timestamp', 'sg_message_id', 'sg_event_id', 'smtp_id',
-    'ip', 'useragent', 'response', 'reason', 'status', 'type', 'url'
-]
 
 CSV_HEADER_SUCCESS = [
     'input_date', 'empresa_id', 'rut_receptor', 'rut_emisor', 'tipo_envio',
-    'tipo_dte_id', 'numero_folio', 'resolucion_receptor', 'resolucion_emisor',
-    'monto', 'fecha_emision', 'fecha_recepcion', 'estado_documento',
+    'tipo_dte_id', 'numero_folio', 'resolucion_emisor',
+    'monto', 'fecha_emision', 'estado_documento',
     'tipo_operacion', 'tipo_receptor', 'id_envio', 'nombre_cliente', 'correo',
     'smtp_id', 'processed_date', 'processed_event', 'processed_sg_event_id',
     'processed_sg_message_id', 'delivered_date', 'delivered_event',
@@ -26,10 +21,7 @@ CSV_HEADER_SUCCESS = [
     'opened_count', 'dropped_date', 'dropped_sg_event_id',
     'dropped_sg_message_id', 'dropped_reason', 'dropped_event', 'bounce_date',
     'bounce_event', 'bounce_sg_event_id', 'bounce_sg_message_id',
-    'bounce_reason', 'bounce_status', 'bounce_type', 'unsubscribe_date',
-    'unsubscribe_uid', 'unsubscribe_purchase', 'unsubscribe_id',
-    'unsubscribe_event', 'click_ip', 'click_purchase', 'click_useragent',
-    'click_event', 'click_email', 'click_date', 'click_url'
+    'bounce_reason', 'bounce_status', 'bounce_type'
 ]
 
 
@@ -52,7 +44,7 @@ def get_row_field(obj, pos):
         try:
             return '"' + obj[pos] + '"'
         except Exception:
-            return ''
+            return 'NULL'
 
 
 def get_field(obj, field):
@@ -60,10 +52,11 @@ def get_field(obj, field):
     if obj is not None:
         try:
             return '"' + str(obj[field]) + '"'
-        except Exception:
-            return ''
+        except Exception as e:
+            print e
+            return 'NULL'
     else:
-        return ''
+        return 'NULL'
 
 
 def get_header(header):
@@ -83,7 +76,7 @@ def crear_linea_csv(header, row):
             linea += str(row[h]) + ","
         except Exception as e:
             print e
-            linea += str("") + ','
+            linea += str('NULL') + ','
     linea = linea[:-1]
     print linea + "\n"
     return linea + "\n"
@@ -92,10 +85,11 @@ def crear_linea_csv(header, row):
 def generar_csv(reader):
     csv_success = open(CSV_SUCCESS, "w")
     csv_success.write(get_header(CSV_HEADER_SUCCESS))
-    csv_errors = open(CSV_ERRORS, "w")
-    csv_errors.write(get_header(CSV_HEADER_ERROR))
+
     print "Cabeceras creadas"
+
     row = dict()
+
     if reader is not None:
         for data in reader:
             if data[0] == 'event':
@@ -107,7 +101,7 @@ def generar_csv(reader):
                     if data[13]:
                         j = json.loads(data[13])
 
-                        if exist_trunc(j) == False:
+                        if not exist_trunc(j):
                             row['input_date'] = date_utils.get_date_to_string(data[2])
                             row['empresa_id'] = get_field(j, 'empresa')
                             row['rut_receptor'] = get_field(j, 'rut_receptor')
@@ -115,11 +109,9 @@ def generar_csv(reader):
                             row['tipo_envio'] = get_field(j, 'tipo_envio')
                             row['tipo_dte_id'] = get_field(j, 'tipo_dte')
                             row['numero_folio'] = get_field(j, 'numero_folio')
-                            row['resolucion_receptor'] = get_field(j, 'resolucion_receptor')
                             row['resolucion_emisor'] = get_field(j, 'resolucion_emisor')
                             row['monto'] = get_field(j, 'monto')
                             row['fecha_emision'] = get_field(j, 'fecha_emision')
-                            row['fecha_recepcion'] = get_field(j, 'fecha_recepcion')
                             row['estado_documento'] = get_field(j, 'estado_documento')
                             row['tipo_operacion'] = get_field(j, 'tipo_operacion')
                             row['tipo_receptor'] = get_field(j, 'tipo_receptor')
@@ -139,42 +131,34 @@ def generar_csv(reader):
                                 row['processed_sg_message_id'] = get_row_field(data, 3)
 
                                 # dejar campos en blanco
-                                row['delivered_date'] = '""'
-                                row['delivered_event'] = '""'
-                                row['delivered_sg_event_id'] = '""'
-                                row['delivered_sg_message_id'] = '""'
-                                row['delivered_response'] = '""'
+                                row['delivered_date'] = 'NULL'
+                                row['delivered_event'] = 'NULL'
+                                row['delivered_sg_event_id'] = 'NULL'
+                                row['delivered_sg_message_id'] = 'NULL'
+                                row['delivered_response'] = 'NULL'
 
-                                row['opened_first_date'] = '""'
-                                row['opened_last_date'] = '""'
-                                row['opened_event'] = '""'
-                                row['opened_ip'] = '""'
-                                row['opened_user_agent'] = '""'
-                                row['opened_sg_event_id'] = '""'
-                                row['opened_sg_message_id'] = '""'
-                                row['opened_count'] = '""'
+                                row['opened_first_date'] = 'NULL'
+                                row['opened_last_date'] = 'NULL'
+                                row['opened_event'] = 'NULL'
+                                row['opened_ip'] = 'NULL'
+                                row['opened_user_agent'] = 'NULL'
+                                row['opened_sg_event_id'] = 'NULL'
+                                row['opened_sg_message_id'] = 'NULL'
+                                row['opened_count'] = 'NULL'
 
-                                row['dropped_date'] = '""'
-                                row['dropped_sg_event_id'] = '""'
-                                row['dropped_sg_message_id'] = '""'
-                                row['dropped_reason'] = '""'
-                                row['dropped_event'] = '""'
+                                row['dropped_date'] = 'NULL'
+                                row['dropped_sg_event_id'] = 'NULL'
+                                row['dropped_sg_message_id'] = 'NULL'
+                                row['dropped_reason'] = 'NULL'
+                                row['dropped_event'] = 'NULL'
 
-                                row['bounce_date'] = '""'
-                                row['bounce_event'] = '""'
-                                row['bounce_sg_event_id'] = '""'
-                                row['bounce_sg_message_id'] = '""'
-                                row['bounce_reason'] = '""'
-                                row['bounce_status'] = '""'
-                                row['bounce_type'] = '""'
-
-                                row['click_ip'] = '""'
-                                row['click_purchase'] = '""'
-                                row['click_useragent'] = '""'
-                                row['click_event'] = '""'
-                                row['click_email'] = '""'
-                                row['click_date'] = '""'
-                                row['click_url'] = '""'
+                                row['bounce_date'] = 'NULL'
+                                row['bounce_event'] = 'NULL'
+                                row['bounce_sg_event_id'] = 'NULL'
+                                row['bounce_sg_message_id'] = 'NULL'
+                                row['bounce_reason'] = 'NULL'
+                                row['bounce_status'] = 'NULL'
+                                row['bounce_type'] = 'NULL'
 
                                 csv_success.write(crear_linea_csv(CSV_HEADER_SUCCESS, row))
 
@@ -185,41 +169,33 @@ def generar_csv(reader):
                                 row['delivered_sg_message_id'] = get_row_field(data, 3)
                                 row['delivered_response'] = get_row_field(data, 8)
 
-                                row['processed_event'] = '""'
-                                row['processed_date'] = '""'
-                                row['processed_sg_event_id'] = '""'
-                                row['processed_sg_message_id'] = '""'
+                                row['processed_event'] = 'NULL'
+                                row['processed_date'] = 'NULL'
+                                row['processed_sg_event_id'] = 'NULL'
+                                row['processed_sg_message_id'] = 'NULL'
 
-                                row['opened_first_date'] = '""'
-                                row['opened_last_date'] = '""'
-                                row['opened_event'] = '""'
-                                row['opened_ip'] = '""'
-                                row['opened_user_agent'] = '""'
-                                row['opened_sg_event_id'] = '""'
-                                row['opened_sg_message_id'] = '""'
-                                row['opened_count'] = '""'
+                                row['opened_first_date'] = 'NULL'
+                                row['opened_last_date'] = 'NULL'
+                                row['opened_event'] = 'NULL'
+                                row['opened_ip'] = 'NULL'
+                                row['opened_user_agent'] = 'NULL'
+                                row['opened_sg_event_id'] = 'NULL'
+                                row['opened_sg_message_id'] = 'NULL'
+                                row['opened_count'] = 'NULL'
 
-                                row['dropped_date'] = '""'
-                                row['dropped_sg_event_id'] = '""'
-                                row['dropped_sg_message_id'] = '""'
-                                row['dropped_reason'] = '""'
-                                row['dropped_event'] = '""'
+                                row['dropped_date'] = 'NULL'
+                                row['dropped_sg_event_id'] = 'NULL'
+                                row['dropped_sg_message_id'] = 'NULL'
+                                row['dropped_reason'] = 'NULL'
+                                row['dropped_event'] = 'NULL'
 
-                                row['bounce_date'] = '""'
-                                row['bounce_event'] = '""'
-                                row['bounce_sg_event_id'] = '""'
-                                row['bounce_sg_message_id'] = '""'
-                                row['bounce_reason'] = '""'
-                                row['bounce_status'] = '""'
-                                row['bounce_type'] = '""'
-
-                                row['click_ip'] = '""'
-                                row['click_purchase'] = '""'
-                                row['click_useragent'] = '""'
-                                row['click_event'] = '""'
-                                row['click_email'] = '""'
-                                row['click_date'] = '""'
-                                row['click_url'] = '""'
+                                row['bounce_date'] = 'NULL'
+                                row['bounce_event'] = 'NULL'
+                                row['bounce_sg_event_id'] = 'NULL'
+                                row['bounce_sg_message_id'] = 'NULL'
+                                row['bounce_reason'] = 'NULL'
+                                row['bounce_status'] = 'NULL'
+                                row['bounce_type'] = 'NULL'
 
                                 csv_success.write(crear_linea_csv(CSV_HEADER_SUCCESS, row))
 
@@ -231,40 +207,32 @@ def generar_csv(reader):
                                 row['opened_user_agent'] = get_row_field(data, 7)
                                 row['opened_sg_event_id'] = get_row_field(data, 4)
                                 row['opened_sg_message_id'] = get_row_field(data, 3)
-                                row['opened_count'] = 1
+                                row['opened_count'] = '"1"'
 
-                                row['processed_event'] = '""'
-                                row['processed_date'] = '""'
-                                row['processed_sg_event_id'] = '""'
-                                row['processed_sg_message_id'] = '""'
+                                row['processed_event'] = 'NULL'
+                                row['processed_date'] = 'NULL'
+                                row['processed_sg_event_id'] = 'NULL'
+                                row['processed_sg_message_id'] = 'NULL'
 
-                                row['delivered_date'] = '""'
-                                row['delivered_event'] = '""'
-                                row['delivered_sg_event_id'] = '""'
-                                row['delivered_sg_message_id'] = '""'
-                                row['delivered_response'] = '""'
+                                row['delivered_date'] = 'NULL'
+                                row['delivered_event'] = 'NULL'
+                                row['delivered_sg_event_id'] = 'NULL'
+                                row['delivered_sg_message_id'] = 'NULL'
+                                row['delivered_response'] = 'NULL'
 
-                                row['dropped_date'] = '""'
-                                row['dropped_sg_event_id'] = '""'
-                                row['dropped_sg_message_id'] = '""'
-                                row['dropped_reason'] = '""'
-                                row['dropped_event'] = '""'
+                                row['dropped_date'] = 'NULL'
+                                row['dropped_sg_event_id'] = 'NULL'
+                                row['dropped_sg_message_id'] = 'NULL'
+                                row['dropped_reason'] = 'NULL'
+                                row['dropped_event'] = 'NULL'
 
-                                row['bounce_date'] = '""'
-                                row['bounce_event'] = '""'
-                                row['bounce_sg_event_id'] = '""'
-                                row['bounce_sg_message_id'] = '""'
-                                row['bounce_reason'] = '""'
-                                row['bounce_status'] = '""'
-                                row['bounce_type'] = '""'
-
-                                row['click_ip'] = '""'
-                                row['click_purchase'] = '""'
-                                row['click_useragent'] = '""'
-                                row['click_event'] = '""'
-                                row['click_email'] = '""'
-                                row['click_date'] = '""'
-                                row['click_url'] = '""'
+                                row['bounce_date'] = 'NULL'
+                                row['bounce_event'] = 'NULL'
+                                row['bounce_sg_event_id'] = 'NULL'
+                                row['bounce_sg_message_id'] = 'NULL'
+                                row['bounce_reason'] = 'NULL'
+                                row['bounce_status'] = 'NULL'
+                                row['bounce_type'] = 'NULL'
 
                                 csv_success.write(crear_linea_csv(CSV_HEADER_SUCCESS, row))
 
@@ -275,41 +243,33 @@ def generar_csv(reader):
                                 row['dropped_reason'] = get_row_field(data, 9)
                                 row['dropped_event'] = get_row_field(data, 0)
 
-                                row['processed_event'] = '""'
-                                row['processed_date'] = '""'
-                                row['processed_sg_event_id'] = '""'
-                                row['processed_sg_message_id'] = '""'
+                                row['processed_event'] = 'NULL'
+                                row['processed_date'] = 'NULL'
+                                row['processed_sg_event_id'] = 'NULL'
+                                row['processed_sg_message_id'] = 'NULL'
 
-                                row['delivered_date'] = '""'
-                                row['delivered_event'] = '""'
-                                row['delivered_sg_event_id'] = '""'
-                                row['delivered_sg_message_id'] = '""'
-                                row['delivered_response'] = '""'
+                                row['delivered_date'] = 'NULL'
+                                row['delivered_event'] = 'NULL'
+                                row['delivered_sg_event_id'] = 'NULL'
+                                row['delivered_sg_message_id'] = 'NULL'
+                                row['delivered_response'] = 'NULL'
 
-                                row['opened_first_date'] = '""'
-                                row['opened_last_date'] = '""'
-                                row['opened_event'] = '""'
-                                row['opened_ip'] = '""'
-                                row['opened_user_agent'] = '""'
-                                row['opened_sg_event_id'] = '""'
-                                row['opened_sg_message_id'] = '""'
-                                row['opened_count'] = '""'
+                                row['opened_first_date'] = 'NULL'
+                                row['opened_last_date'] = 'NULL'
+                                row['opened_event'] = 'NULL'
+                                row['opened_ip'] = 'NULL'
+                                row['opened_user_agent'] = 'NULL'
+                                row['opened_sg_event_id'] = 'NULL'
+                                row['opened_sg_message_id'] = 'NULL'
+                                row['opened_count'] = 'NULL'
 
-                                row['bounce_date'] = '""'
-                                row['bounce_event'] = '""'
-                                row['bounce_sg_event_id'] = '""'
-                                row['bounce_sg_message_id'] = '""'
-                                row['bounce_reason'] = '""'
-                                row['bounce_status'] = '""'
-                                row['bounce_type'] = '""'
-
-                                row['click_ip'] = '""'
-                                row['click_purchase'] = '""'
-                                row['click_useragent'] = '""'
-                                row['click_event'] = '""'
-                                row['click_email'] = '""'
-                                row['click_date'] = '""'
-                                row['click_url'] = '""'
+                                row['bounce_date'] = 'NULL'
+                                row['bounce_event'] = 'NULL'
+                                row['bounce_sg_event_id'] = 'NULL'
+                                row['bounce_sg_message_id'] = 'NULL'
+                                row['bounce_reason'] = 'NULL'
+                                row['bounce_status'] = 'NULL'
+                                row['bounce_type'] = 'NULL'
 
                                 csv_success.write(crear_linea_csv(CSV_HEADER_SUCCESS, row))
 
@@ -322,92 +282,31 @@ def generar_csv(reader):
                                 row['bounce_status'] = get_row_field(data, 10)
                                 row['bounce_type'] = get_row_field(data, 11)
 
-                                row['processed_event'] = '""'
-                                row['processed_date'] = '""'
-                                row['processed_sg_event_id'] = '""'
-                                row['processed_sg_message_id'] = '""'
+                                row['processed_event'] = 'NULL'
+                                row['processed_date'] = 'NULL'
+                                row['processed_sg_event_id'] = 'NULL'
+                                row['processed_sg_message_id'] = 'NULL'
 
-                                row['delivered_date'] = '""'
-                                row['delivered_event'] = '""'
-                                row['delivered_sg_event_id'] = '""'
-                                row['delivered_sg_message_id'] = '""'
-                                row['delivered_response'] = '""'
+                                row['delivered_date'] = 'NULL'
+                                row['delivered_event'] = 'NULL'
+                                row['delivered_sg_event_id'] = 'NULL'
+                                row['delivered_sg_message_id'] = 'NULL'
+                                row['delivered_response'] = 'NULL'
 
-                                row['opened_first_date'] = '""'
-                                row['opened_last_date'] = '""'
-                                row['opened_event'] = '""'
-                                row['opened_ip'] = '""'
-                                row['opened_user_agent'] = '""'
-                                row['opened_sg_event_id'] = '""'
-                                row['opened_sg_message_id'] = '""'
-                                row['opened_count'] = '""'
+                                row['opened_first_date'] = 'NULL'
+                                row['opened_last_date'] = 'NULL'
+                                row['opened_event'] = 'NULL'
+                                row['opened_ip'] = 'NULL'
+                                row['opened_user_agent'] = 'NULL'
+                                row['opened_sg_event_id'] = 'NULL'
+                                row['opened_sg_message_id'] = 'NULL'
+                                row['opened_count'] = 'NULL'
 
-                                row['dropped_date'] = '""'
-                                row['dropped_sg_event_id'] = '""'
-                                row['dropped_sg_message_id'] = '""'
-                                row['dropped_reason'] = '""'
-                                row['dropped_event'] = '""'
-
-                                row['click_ip'] = '""'
-                                row['click_purchase'] = '""'
-                                row['click_useragent'] = '""'
-                                row['click_event'] = '""'
-                                row['click_email'] = '""'
-                                row['click_date'] = '""'
-                                row['click_url'] = '""'
-
-                                csv_success.write(crear_linea_csv(CSV_HEADER_SUCCESS, row))
-
-                            elif evento == '"click"':
-                                row['click_ip'] = get_row_field(data, 6)
-                                row['click_purchase'] = '""'
-                                row['click_useragent'] = '""'
-                                row['click_event'] = get_row_field(data, 0)
-                                row['click_email'] = '""'
-                                row['click_date'] = get_row_field(data, 2)
-                                row['click_url'] = get_row_field(data, 12)
-
-                                row['processed_event'] = '""'
-                                row['processed_date'] = '""'
-                                row['processed_sg_event_id'] = '""'
-                                row['processed_sg_message_id'] = '""'
-
-                                row['delivered_date'] = '""'
-                                row['delivered_event'] = '""'
-                                row['delivered_sg_event_id'] = '""'
-                                row['delivered_sg_message_id'] = '""'
-                                row['delivered_response'] = '""'
-
-                                row['opened_first_date'] = '""'
-                                row['opened_last_date'] = '""'
-                                row['opened_event'] = '""'
-                                row['opened_ip'] = '""'
-                                row['opened_user_agent'] = '""'
-                                row['opened_sg_event_id'] = '""'
-                                row['opened_sg_message_id'] = '""'
-                                row['opened_count'] = '""'
-
-                                row['dropped_date'] = '""'
-                                row['dropped_sg_event_id'] = '""'
-                                row['dropped_sg_message_id'] = '""'
-                                row['dropped_reason'] = '""'
-                                row['dropped_event'] = '""'
-
-                                row['bounce_date'] = '""'
-                                row['bounce_event'] = '""'
-                                row['bounce_sg_event_id'] = '""'
-                                row['bounce_sg_message_id'] = '""'
-                                row['bounce_reason'] = '""'
-                                row['bounce_status'] = '""'
-                                row['bounce_type'] = '""'
-
-                                row['click_ip'] = '""'
-                                row['click_purchase'] = '""'
-                                row['click_useragent'] = '""'
-                                row['click_event'] = '""'
-                                row['click_email'] = '""'
-                                row['click_date'] = '""'
-                                row['click_url'] = '""'
+                                row['dropped_date'] = 'NULL'
+                                row['dropped_sg_event_id'] = 'NULL'
+                                row['dropped_sg_message_id'] = 'NULL'
+                                row['dropped_reason'] = 'NULL'
+                                row['dropped_event'] = 'NULL'
 
                                 csv_success.write(crear_linea_csv(CSV_HEADER_SUCCESS, row))
 
@@ -415,5 +314,4 @@ def generar_csv(reader):
                     print e
                     raise e
         print "Proceso Finalizado"
-    csv_errors.close()
     csv_success.close()

@@ -32,7 +32,7 @@ def main():
         try:
             print csv_file
             archivo = codecs.open(csv_file, "rbU", encoding='ISO-8859-1')
-            reader = csv.reader(archivo, delimiter=';')
+            reader = csv.reader(archivo, delimiter=',')
 
             generar_csv(reader)
 

@@ -1,18 +1,12 @@
 # encoding: ISO-8859-1
-#!/usr/bin/env python
 
 
 import csv
 import codecs
 from optparse import OptionParser
-import sys
 
 
 from csv_loads import generar_csv
-
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 def main():

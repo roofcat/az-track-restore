@@ -4,9 +4,14 @@
 import csv
 import codecs
 from optparse import OptionParser
+import sys
 
 
 from csv_loads import generar_csv
+
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 def main():

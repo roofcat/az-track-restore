@@ -129,8 +129,13 @@ def generar_csv(reader):
                         row['tipo_operacion'] = get_field(j, 'tipo_operacion')
                         row['tipo_receptor'] = get_field(j, 'tipo_receptor')
                         row['id_envio'] = get_field(j, 'id_envio')
-                        row['nombre_cliente'] = get_field(j, 'nombre_cliente')
-                        row['correo'] = get_row_field(data, 1)
+                        correo = get_row_field(data, 1)
+                        row['correo'] = correo
+                        nombre_cliente = get_field(j, 'nombre_cliente')
+                        if nombre_cliente is not 'NULL':
+                            row['nombre_cliente'] = nombre_cliente
+                        else:
+                            row['nombre_cliente'] = correo
 
                         row['smtp_id'] = get_row_field(data, 7)
 
